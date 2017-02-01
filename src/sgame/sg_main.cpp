@@ -947,7 +947,7 @@ static bool G_VotesRunning()
 G_ShutdownGame
 =================
 */
-void G_ShutdownGame( int restart )
+void G_ShutdownGame( int /* restart */ )
 {
 	// in case of a map_restart
 	G_ClearVotes( true );
@@ -976,7 +976,7 @@ void G_ShutdownGame( int restart )
 	G_WriteSessionData();
 
 	G_admin_cleanup();
-	G_BotCleanup( restart );
+	G_BotCleanup();
 	G_namelog_cleanup();
 
 	G_UnregisterCommands();
