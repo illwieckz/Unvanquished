@@ -2945,6 +2945,8 @@ void G_RunFrame( int levelTime )
 	// see if it is time to end the level
 	CheckExitRules();
 
+	G_BotFill( false );
+
 	// update to team status?
 	CheckTeamStatus();
 
