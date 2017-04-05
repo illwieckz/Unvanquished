@@ -120,17 +120,24 @@ Instead of `make`, you can use `make -jN` where `N` is your number of CPU cores 
 ¹ *Fast, requires `aria2c`.*
 ² *Unreliable speed, requires `curl`.*
 
-#### If you're a developer
+#### If you just want to load the bare minimum
+
+Do not forget to run `git submodule update --init --recursive` first to fetch `main/unvanquished_src.dpkdir`.
+
+    cd build
+	./daemon -pakpath ../main
+
+See below for `vm.*game.type` options to load shared-object gamelogic.
+
+#### Loading your own assets
 
 As a developer, you will want to load your own assets in addition to those shipped with the game. To do that:
 
     cd build
-    mkdir -p pkg; cd pkg
-    ln -s ../../main git_source.pk3dir
-    mkdir assets_source.pk3dir
-    echo git > assets_source.pk3dir/DEPS
+	mkdir pkg
+    mkdir pkg/assets_src.dpkdir
 
-You can now put loose assets into `assets_source.pk3dir` or you can put additional pk3dir directories or pk3 containers inside `pkg` and add their names (the format is `NAME_VERSION.pk3(dir)`) as lines to the `DEPS` file. In order to launch Unvanquished, use one of the following commands:
+You can now put loose assets into `assets_src.dpkdir` or you can put additional dpkdir directories or dpk containers inside `pkg` and add their names (the format is `NAME_VERSION.dpk(dir)`) as lines to the `DEPS` file. In order to launch Unvanquished, use one of the following commands:
 
   - `./daemon -pakpath PATH -set fs_extrapaks assets # ¹`
   - `./daemon -pakpath PATH -set fs_extrapaks assets -set vm.sgame.type 3 -set vm.cgame.type 3 -set vm.sgame.debug 1 -set vm.cgame.debug 1 +devmap plat23 # ²`

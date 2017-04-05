@@ -7,3 +7,6 @@
 [submodule "daemon"]
 	path = daemon
 	url = https://github.com/DaemonEngine/Daemon.git
+[submodule "main/unvanquished_src.dpkdir"]
+	path = main/unvanquished_src.dpkdir
+	url = http://github.com/UnvanquishedAssets/unvanquished_src.dpkdir/
