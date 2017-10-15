@@ -855,7 +855,7 @@ static bool CG_RegisterClientModelname( clientInfo_t *ci, const char *modelName,
 		{
 			if ( !CG_RegisterPlayerAnimation( ci, modelName, LEGS_IDLE, "idle", true, false, false ) )
 			{
-				Log::Notice( "Failed to load idle animation file %s\n", filename );
+				Log::Notice( "Failed to load idle animation." );
 				return false;
 			}
 
@@ -1012,7 +1012,7 @@ static bool CG_RegisterClientModelname( clientInfo_t *ci, const char *modelName,
 			// Load Alien animations
 			if ( !CG_RegisterPlayerAnimation( ci, modelName, NSPA_STAND, "stand", true, false, false ) )
 			{
-				Log::Notice( "Failed to load standing animation file %s\n", filename );
+				Log::Notice( "Failed to load stand animation." );
 				return false;
 			}
 
@@ -1263,32 +1263,28 @@ static void CG_LoadClientInfo( clientInfo_t *ci )
 			break;
 		}
 
+		ci->sounds[ i ] = trap_S_RegisterSound( va( "sound/player/%s/%s", dir, s + 1 ), false );
 		// fanny about a bit with sounds that are missing
-		if ( !CG_FileExists( va( "sound/player/%s/%s", dir, s + 1 ) ) )
+		if ( ci->sounds[ i ] == -1 )
 		{
 			//file doesn't exist
-
-			if ( i == 11 || i == 8 ) //fall or falling
+			if ( i == 11 || i == 8 ) // fall or falling
 			{
 				ci->sounds[ i ] = trap_S_RegisterSound( "sound/null", false );
 			}
 			else
 			{
-				if ( i == 9 ) //gasp
+				if ( i == 9 ) // gasp
 				{
-					s = cg_customSoundNames[ 7 ]; //pain100_1
+					s = cg_customSoundNames[ 7 ]; // pain100_1
 				}
 				else if ( i == 10 ) //drown
 				{
-					s = cg_customSoundNames[ 0 ]; //death1
+					s = cg_customSoundNames[ 0 ]; // death1
 				}
 
 				ci->sounds[ i ] = trap_S_RegisterSound( va( "sound/player/%s/%s", dir, s + 1 ), false );
 			}
-		}
-		else
-		{
-			ci->sounds[ i ] = trap_S_RegisterSound( va( "sound/player/%s/%s", dir, s + 1 ), false );
 		}
 	}
 
@@ -2934,6 +2930,7 @@ int CG_AmbientLight( vec3_t point )
 CG_Player
 ===============
 */
+// TODO: Break this function up and reduce code copy-paste between md3 and skeletal code paths.
 void CG_Player( centity_t *cent )
 {
 	clientInfo_t *ci;
@@ -3156,6 +3153,7 @@ void CG_Player( centity_t *cent )
 			legs.origin[ 0 ] -= ci->headOffset[ 0 ];
 			legs.origin[ 1 ] -= ci->headOffset[ 1 ];
 			legs.origin[ 2 ] -= 22 + ci->headOffset[ 2 ];
+			VectorMA( legs.origin, BG_ClassModelConfig( class_ )->zOffset, surfNormal, legs.origin );
 		}
 
 		VectorCopy( legs.origin, legs.lightingOrigin );
