@@ -9,6 +9,9 @@ os:
 language:
   - cpp
 
+python:
+  - "2.7"
+
 env:
   - MODE=0
   - MODE=1
