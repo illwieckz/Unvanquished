@@ -67,13 +67,13 @@ MSYS2 is an easy way to get MingW compiler and build dependencies, the standalon
 
 ## Download instructions
 
-Unvanquished requires several sub-repositories to be fetched before compilation. If you have not yet cloned this repository:
+Unvanquished requires several sub-repositories to be fetched before compilation. If you have not yet cloned this repository, clone with submodules this way:
 
 ```sh
 git clone --recurse-submodules https://github.com/Unvanquished/Unvanquished.git
 ```
 
-If you have already cloned:
+If you have already cloned, fetch missing submodules this way:
 
 ```sh
 cd Unvanquished/
@@ -84,7 +84,7 @@ If cmake complains about the `daemon/` folder being empty then you have skipped 
 
 ## Build Instructions
 
-Instead of `-j4` you can use `-jN` where `N` is your number of CPU cores to distribute compilation on them. Linux systems usually provide an handy `nproc` tool that tells the number of CPU core so you can just do `-j$(nproc)` to use all available cores.
+Instead of `-j4` you can use `-jN` where `N` is your number of CPU cores to distribute compilation on them. Systems like Linux, macOS or MSYS2 may provide an handy `nproc` tool (usually shipped within `coreutils` package) that tells the number of CPU core so you can just do `-j$(nproc)` to use all available cores.
 
 Enter the directory before anything else:
 
@@ -138,7 +138,7 @@ cd build
 #### If you don't have the assets, you can download them first
 
 The package downloader script can use `aria2c`, `curl` or `wget`, `aria2c` is recommended.
-You can do `./download-paks --help` for more options.
+You can do `./download-paks --help` to get information about options availables.
 
 ```sh
 ./download-paks build/pkg
@@ -160,7 +160,7 @@ cd build
 
 Note that only the basic `unvanquished_src.dpkdir` asset package is provided that way, and running Unvanquished only with that package will bring you some warnings about other missing packages and you will miss soundtrack and stuff like that. You also need to load your own game code (using _vm type_ switches) at this point.
 
-This should be enough to start the game and reach the main menu and from there, join a server. If the server supports autodownload mechanism, Unvanquished will fetch all the missing packages from it.
+This should be enough to start the game and reach the main menu and from there, join a server. If the server supports download mechanism, Unvanquished will fetch all the missing packages from it.
 
 If you are looking for the sources of the whole assets, have a look at the [UnvanquishedAssets](https://github.com/UnvanquishedAssets/UnvanquishedAssets) repository. Beware that unlike the `unvanquished_src.dpkdir` package most of them can't be loaded correctly by the engine without being built first.
 
@@ -170,11 +170,10 @@ As a developer, you will want to load your own assets in addition to those shipp
 
 ```sh
 cd build
-mkdir -p pkg && cd pkg
-mkdir assets_src.dpkdir
+mkdir -p pkg/assets_src.dpkdir
 ```
 
-You can now put loose assets into `assets_src.dpkdir` or you can put additional dpkdir directories or dpk containers inside `pkg` and add their names (the format is `<NAME>_<VERSION>.dpk[dir]`) as lines to the `DEPS` file (the format is `<NAME> <VERSION>`). Version is required in package filename but optional in `DEPS` file. In order to launch Unvanquished, use one of the following commands:
+You can now put loose assets into `pkg/assets_src.dpkdir` or you can put additional dpkdir directories or dpk packages inside `pkg` and add their names (the format is `<NAME>_<VERSION>.dpk[dir]`) as lines to the `DEPS` file (the format is `<NAME> [VERSION]`). Version is required in package filename but optional in `DEPS` file. In order to launch Unvanquished, use one of the following commands:
 
 ```sh
 # Runs the game and loads the “assets” package and its dependencies from “pkg/” directory:
@@ -184,9 +183,10 @@ You can now put loose assets into `assets_src.dpkdir` or you can put additional 
 # when <PATH> is not one of the default Unvanquished paths:
 ./daemon -pakpath <PATH> -set fs_extrapaks assets
 
-# In addition, load a shared-object gamelogic you compiled and allow it to be debugged,
-# then launch the map “Platform 23” with cheats enabled after startup:
-./daemon -pakpath <PATH> -set fs_extrapaks assets \
+# In addition, run the game on gdb,
+# load a shared-object gamelogic you compiled and allow it to be debugged,
+# then launch the map “Platform 23” with cheats enabled:
+gdb -ex run --args ./daemon -pakpath <PATH> -set fs_extrapaks assets \
 			-set vm.sgame.type 3 -set vm.cgame.type 3 \
 			+devmap plat23
 ```
@@ -197,7 +197,7 @@ You can now put loose assets into `assets_src.dpkdir` or you can put additional 
 
 Run `daemon.exe -pakpath <PATH>`, where `<PATH>` is the path to the `pkg/` directory that contains the game's assets.
 
-#### If you don't have the assets
+#### If you don't have the assets yet
 
-1. Copy the `pkg/` directory from the release zip ([torrent](https://cdn.unvanquished.net/latest.php) | [web](https://github.com/Unvanquished/Unvanquished/releases)) into your build directory.
+1. Copy the `pkg/` directory from the release zip ([torrent](https://cdn.unvanquished.net/current.torrent) | [web](https://github.com/Unvanquished/Unvanquished/releases)) into your build directory.
 2. Run `daemon.exe`.
