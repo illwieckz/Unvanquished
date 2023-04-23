@@ -1245,9 +1245,52 @@ Will perform callbacks to make the loading info screen update.
 =================
 */
 
+std::random_device rd;
+std::mt19937 rng( rd() );
+
+static int randomInt(int min, int max)
+{
+	std::uniform_int_distribution<int> dist(min, max);
+	return dist( rng );
+}
+
+static std::string randomString(int length)
+{
+	std::string sample = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+	std::uniform_int_distribution<> dist( 0, sample.size() - 1 );
+	std::string s = "";
+	for( int i = 0; i < length; i++ )
+	{
+		s += sample[ dist( rng ) ];
+	}
+	return s;
+}
+
+#define ENABLE_DEVMAP 1
+
+static void DebugCvar()
+{
+	std::random_device rd;
+	std::string name = randomString( randomInt( 16, 64 ) );
+	std::string desc = randomString( randomInt( 16, 64 ) );
+	std::string value = randomString( randomInt( 16, 64 ) );
+	Cvar::Cvar<std::string> cvar( name, desc, Cvar::CHEAT, value );
+	Cvar::SetValue( name, randomString( randomInt( 16, 64 ) ) );
+	if ( cvar.Get() != value
+	#if ENABLE_DEVMAP
+		&& !trap_Cvar_VariableValue( "sv_cheats" )
+	#endif
+		)
+	{
+		abort();
+	}
+}
+
 void CG_Init( int serverMessageNum, int clientNum, const glconfig_t& gl, const GameStateCSs& gameState)
 {
 	const char *s;
+
+	DebugCvar();
 
 	// clear everything
 	// reset cgs in-place to avoid creating a huge struct on stack (caused a stack overflow)
